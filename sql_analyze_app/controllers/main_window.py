@@ -68,6 +68,10 @@ class MainWindow(QMainWindow):
         self.conditionTableWidget = self._createTable(["No", "Code Block", "Condition Type", "Condition Text"])
         self.resultTabs.addTab(self.sourceTableWidget, "소스 테이블")
         self.resultTabs.addTab(self.conditionTableWidget, "조건문")
+        self.conditionHintLabel = QLabel("Code Block은 가장 바깥쪽 부터 오름차순으로 매겨집니다")
+        self.conditionHintLabel.setObjectName("conditionHintLabel")
+        self.conditionHintLabel.setVisible(False)
+        self.resultTabs.setCornerWidget(self.conditionHintLabel, Qt.TopRightCorner)
         rootLayout.addWidget(self.resultTabs, 2)
 
         self.setCentralWidget(centralWidget)
@@ -79,6 +83,10 @@ class MainWindow(QMainWindow):
         self.analyzeButton.clicked.connect(self.handleAnalyzeSql)
         self.exportButton.clicked.connect(self.handleExportExcel)
         self.resetButton.clicked.connect(self.handleReset)
+        self.resultTabs.currentChanged.connect(self.handleResultTabChanged)
+
+    def handleResultTabChanged(self, index: int) -> None:
+        self.conditionHintLabel.setVisible(index == 1)
 
     def handleUploadSqlFile(self) -> None:
         filePath, _ = QFileDialog.getOpenFileName(self, "SQL 파일 선택", "", "SQL Files (*.sql);;All Files (*.*)")
@@ -217,6 +225,12 @@ class MainWindow(QMainWindow):
             QTabBar::tab:hover {
                 background: #ffffff;
                 color: #111827;
+            }
+            QLabel#conditionHintLabel {
+                color: #4b5563;
+                font-size: 12px;
+                font-weight: 600;
+                padding-right: 8px;
             }
             QHeaderView::section {
                 background: #1f2937;
